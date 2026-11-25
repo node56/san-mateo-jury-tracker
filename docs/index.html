@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>San Mateo Jury Reporting History — Groups 1000–1019</title>
+<meta name="description" content="Unofficial daily history of San Mateo Superior Court jury reporting instructions: which groups were called, on call-back, or excused. The court only publishes the current day — this keeps the history.">
+<style>
+  :root { color-scheme: light; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; margin: 0; color: #1a1a1a; background: #f7f7f5; }
+  main { max-width: 960px; margin: 0 auto; padding: 24px 18px 64px; }
+  h1 { font-size: 1.7rem; line-height: 1.2; margin: 0 0 6px; }
+  h2 { font-size: 1.25rem; margin: 32px 0 10px; border-top: 1px solid #ddd; padding-top: 20px; }
+  h3 { font-size: 1rem; margin: 20px 0 6px; }
+  p { margin: 8px 0; }
+  .sub { color: #555; font-size: 1.02rem; }
+  .warn { background: #fff3cd; border: 1px solid #e6c200; border-radius: 8px; padding: 12px 14px; margin: 16px 0; }
+  .warn strong { display: block; margin-bottom: 4px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 18px 0; }
+  .card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; }
+  .card b { display: block; font-size: 1.6rem; line-height: 1.1; }
+  .card span { color: #555; font-size: 0.9rem; }
+  table { border-collapse: collapse; width: 100%; background: #fff; font-size: 0.92rem; }
+  th, td { border: 1px solid #ddd; padding: 7px 9px; text-align: left; vertical-align: top; }
+  th { background: #f0f0ee; }
+  .grid { font-size: 0.82rem; }
+  .grid th, .grid td { text-align: center; padding: 6px 2px; min-width: 26px; }
+  .grid td.date { text-align: left; padding-left: 8px; white-space: nowrap; font-weight: 600; }
+  .called830 { background: #1a7f37; color: #fff; font-weight: 700; }
+  .called930 { background: #4ac26b; color: #083; font-weight: 700; }
+  .callback { background: #fde68a; }
+  .excused { background: #cbd5e1; }
+  .unverified { background: repeating-linear-gradient(45deg, #fde68a, #fde68a 6px, #fff 6px, #fff 12px); }
+  .notchecked { background: #f7f7f5; color: #888; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.9rem; margin: 8px 0 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 16px; height: 16px; border: 1px solid #999; display: inline-block; border-radius: 3px; }
+  code { background: #eee; padding: 1px 5px; border-radius: 4px; font-size: 0.88em; }
+  footer { color: #666; font-size: 0.88rem; margin-top: 32px; border-top: 1px solid #ddd; padding-top: 14px; }
+  .muted { color: #666; font-size: 0.9rem; }
+  @media (max-width: 640px) { .grid { font-size: 0.72rem; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>San Mateo Superior Court — Jury Reporting History</h1>
+  <p class="sub">Groups 1000–1019 &middot; Service dates Nov 16–25, 2026 &middot; Unofficial — the court publishes only the current day, so this page keeps the history.</p>
+
+  <div class="warn">
+    <strong>Do not rely on this page for your own jury service.</strong>
+    Always check the official source for your summons: the court's
+    <a href="https://sanmateo.courts.ca.gov/divisions/juror-services">Juror Services reporting status table</a>,
+    or your record at My Juror Record. Group numbers repeat for different weeks — a group listed here was for that week's cohort only.
+  </div>
+
+  <div class="cards" id="summary">
+    <div class="card"><b>8</b><span>service days covered</span></div>
+    <div class="card"><b>1</b><span>day with any group called to report (Mon Nov 23)</span></div>
+    <div class="card"><b>8</b><span>groups called on Nov 23 (1000–1007)</span></div>
+    <div class="card"><b>2</b><span>days all 20 groups excused at the 11:15 AM call-back (Nov 16 &amp; 17)</span></div>
+  </div>
+
+  <h2>Evening posting, by group</h2>
+  <p>What the 6:00 PM check the evening before each service date said. Green = called to report in person. Yellow = call-back / standby — check again at 11:15 AM. Grey = excused in the evening posting (none in this period).</p>
+  <div class="legend">
+    <span><i class="sw called830"></i> Called 8:30 AM</span>
+    <span><i class="sw called930"></i> Called 9:30 AM</span>
+    <span><i class="sw callback"></i> Call-back 11:15 AM</span>
+    <span><i class="sw excused"></i> Excused</span>
+  </div>
+  <div style="overflow-x:auto"><table class="grid" id="evening-grid"><thead><tr><th>Service date</th></tr></thead><tbody><tr><td>Loading data.json…</td></tr></tbody></table></div>
+
+  <h2>11:15 AM call-back outcome</h2>
+  <p>The evening posting is only the first stage. Groups on call-back learn their final instruction at 11:15 AM on the service day itself. That outcome was only recorded when it was actually checked — "not checked" means no check was made, not that nothing happened.</p>
+  <div style="overflow-x:auto"><table id="callback-table">
+    <thead><tr><th>Service date</th><th>Outcome at 11:15 AM</th><th>Table last updated</th></tr></thead>
+    <tbody><tr><td colspan="3">Loading data.json…</td></tr></tbody>
+  </table></div>
+
+  <h2>Detail, by service date</h2>
+  <div style="overflow-x:auto"><table id="detail-table">
+    <thead><tr><th>Service date</th><th>Evening check</th><th>Table last updated</th><th>Called to report</th><th>Call-back</th><th>Excused</th></tr></thead>
+    <tbody><tr><td colspan="6">Loading data.json…</td></tr></tbody>
+  </table></div>
+  <p class="muted" id="location-note"></p>
+
+  <h2>How this data was collected</h2>
+  <ul>
+    <li><strong>Source:</strong> the reporting status table on the court's <a href="https://sanmateo.courts.ca.gov/divisions/juror-services">Juror Services page</a>.</li>
+    <li><strong>Schedule:</strong> a live-browser check Sunday–Thursday at 6:00 PM PT, the evening before each service date, plus a few 11:15 AM call-back checks.</li>
+    <li><strong>Why a live browser:</strong> the table lives in an iframe on <code>web.sanmateocourt.org</code> — a plain-text fetch misses it entirely. On Mon Nov 23 at 11:15 AM that iframe host timed out (11:14–11:43 AM), so that call-back outcome is recorded as <em>not verified</em>, not guessed.</li>
+    <li><strong>Scope:</strong> groups 1000–1019 only, the cohort listed during this period. Other weeks list different group numbers.</li>
+    <li><strong>Machine-readable data:</strong> <a href="data.json">data.json</a> — same facts as this page, one entry per service date.</li>
+  </ul>
+
+  <h2>What the pattern looks like so far</h2>
+  <p>Seven of the eight evening postings were identical: no group called, all 20 on call-back. The exception was Monday Nov 23 — the first day in the period with groups actually called: 1000–1003 at 8:30 AM and 1004–1007 at 9:30 AM, at the Hall of Justice and Records, 400 County Center, Redwood City. At the 11:15 AM call-backs that were checked, both Mon Nov 16 and Tue Nov 17 ended with all 20 groups excused ("Your appearance is not required"). That is a pattern in two weeks of one court's standby pool, not a prediction — the next cohort's groups are different people, and a single trial can change a day.</p>
+
+  <footer>
+    <p>Unofficial, not affiliated with the Superior Court of California, County of San Mateo. Data collected Nov 15–24, 2026. Page last updated <span id="last-updated">Nov 25, 2026</span>. Monitoring continues Sun–Thu 6:00 PM PT through Dec 17, 2026 (the Dec 16 summons week), and this page will be updated as new checks come in.</p>
+    <p>Source code and data: <a id="repo-link" href="https://github.com/node56/san-mateo-jury-tracker">github.com/node56/san-mateo-jury-tracker</a></p>
+  </footer>
+</main>
+<script>
+fetch('data.json').then(r => r.json()).then(d => {
+  const groups = d.groups_listed;
+  const fmt = s => s ? new Date(s).toLocaleString('en-US', {month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit'}) : '—';
+  const range = arr => {
+    if (!arr.length) return '—';
+    if (arr.length === 1) return String(arr[0]);
+    // compress consecutive runs
+    const runs = []; let start = arr[0], prev = arr[0];
+    for (let i = 1; i <= arr.length; i++) {
+      if (arr[i] === prev + 1) { prev = arr[i]; continue; }
+      runs.push(start === prev ? String(start) : start + '–' + prev);
+      start = prev = arr[i];
+    }
+    return runs.join(', ');
+  };
+  // Evening grid
+  const g = document.getElementById('evening-grid');
+  g.querySelector('thead tr').innerHTML = '<th>Service date</th>' + groups.map(n => '<th>' + n + '</th>').join('');
+  g.querySelector('tbody').innerHTML = d.service_days.map(day => {
+    const ev = day.evening;
+    const cells = groups.map(n => {
+      if (ev.called_0830.includes(n)) return '<td class="called830" title="Called 8:30 AM">8:30</td>';
+      if (ev.called_0930.includes(n)) return '<td class="called930" title="Called 9:30 AM">9:30</td>';
+      if (ev.excused.includes(n)) return '<td class="excused" title="Excused">—</td>';
+      return '<td class="callback" title="Call-back 11:15 AM">CB</td>';
+    }).join('');
+    return '<tr><td class="date">' + day.weekday.slice(0,3) + ' ' + day.service_date.slice(5) + '</td>' + cells + '</tr>';
+  }).join('');
+  // Callback table
+  document.getElementById('callback-table').querySelector('tbody').innerHTML = d.service_days.map(day => {
+    const cb = day.callback_1115;
+    let outcome;
+    if (cb.checked) outcome = '<strong>All 20 excused</strong> — ' + (cb.note || '');
+    else if (cb.verified === false) outcome = '<strong>Not verified</strong> — ' + cb.note;
+    else outcome = 'Not checked.';
+    return '<tr><td>' + day.weekday + ' ' + day.service_date + '</td><td>' + outcome + '</td><td>' + (cb.checked ? fmt(cb.table_last_updated) : '—') + '</td></tr>';
+  }).join('');
+  // Detail table
+  document.getElementById('detail-table').querySelector('tbody').innerHTML = d.service_days.map(day => {
+    const ev = day.evening;
+    const called = (ev.called_0830.length ? '8:30 AM: ' + range(ev.called_0830) : '') +
+      (ev.called_0930.length ? (ev.called_0830.length ? '<br>' : '') + '9:30 AM: ' + range(ev.called_0930) : '') || 'None';
+    return '<tr><td>' + day.weekday + ' ' + day.service_date + '</td><td>' + fmt(day.evening_check) + '</td><td>' + fmt(day.table_last_updated) + '</td><td>' + called + '</td><td>' + range(ev.callback) + '</td><td>' + (ev.excused.length ? range(ev.excused) : 'None') + '</td></tr>';
+  }).join('');
+  const loc = d.service_days.find(x => x.evening.location);
+  if (loc) document.getElementById('location-note').textContent = 'Location when groups were called (' + loc.service_date + '): ' + loc.evening.location + '.';
+  document.getElementById('last-updated').textContent = fmt(d.last_updated);
+}).catch(e => {
+  document.querySelectorAll('tbody').forEach(t => t.innerHTML = '<tr><td>Could not load data.json.</td></tr>');
+});
+</script>
+</body>
+</html>
