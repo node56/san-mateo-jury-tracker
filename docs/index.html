@@ -87,7 +87,7 @@
   <h2>How this data was collected</h2>
   <ul>
     <li><strong>Source:</strong> the reporting status table on the court's <a href="https://sanmateo.courts.ca.gov/divisions/juror-services">Juror Services page</a>.</li>
-    <li><strong>Schedule:</strong> a live-browser check Sunday–Thursday at 6:00 PM PT, the evening before each service date, plus a few 11:15 AM call-back checks.</li>
+    <li><strong>Schedule:</strong> a live-browser check Sunday–Thursday at 6:00 PM PT, the evening before each service date, plus a few 11:15 AM call-back checks. Since Nov 25, 2026 both checks are automated by a <a href="https://github.com/node56/san-mateo-jury-tracker/actions/workflows/fetch-jury.yml">GitHub Action</a> (<code>.github/workflows/fetch-jury.yml</code>, script in <code>scripts/fetch_jury.py</code>): 6:00 PM PT Sun–Thu for the evening posting, 11:20 AM PT Mon–Fri for the call-back outcome. If the table cannot be fetched or parsed, the run fails and writes nothing — no group status is ever guessed.</li>
     <li><strong>Why a live browser:</strong> the table lives in an iframe on <code>web.sanmateocourt.org</code> — a plain-text fetch misses it entirely. On Mon Nov 23 at 11:15 AM that iframe host timed out (11:14–11:43 AM), so that call-back outcome is recorded as <em>not verified</em>, not guessed.</li>
     <li><strong>Scope:</strong> groups 1000–1019 only, the cohort listed during this period. Other weeks list different group numbers.</li>
     <li><strong>Machine-readable data:</strong> <a href="data.json">data.json</a> — same facts as this page, one entry per service date.</li>
@@ -134,7 +134,7 @@ fetch('data.json').then(r => r.json()).then(d => {
   document.getElementById('callback-table').querySelector('tbody').innerHTML = d.service_days.map(day => {
     const cb = day.callback_1115;
     let outcome;
-    if (cb.checked) outcome = '<strong>All 20 excused</strong> — ' + (cb.note || '');
+    if (cb.checked) outcome = cb.note || 'Checked — see data.json for detail.';
     else if (cb.verified === false) outcome = '<strong>Not verified</strong> — ' + cb.note;
     else outcome = 'Not checked.';
     return '<tr><td>' + day.weekday + ' ' + day.service_date + '</td><td>' + outcome + '</td><td>' + (cb.checked ? fmt(cb.table_last_updated) : '—') + '</td></tr>';
