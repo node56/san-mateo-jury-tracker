@@ -1,0 +1,71 @@
+# Fetch the San Mateo jury reporting table and keep docs/data.json current.
+#
+# Two checks, matching what a juror actually does:
+#   * Evening (6:00 PM PT, Sun-Thu): the posting for the NEXT service day.
+#     18:00 PST = 02:00 UTC the next day, so Sun-Thu evenings are Mon-Fri 02:05 UTC.
+#   * Call-back (11:15 AM PT, Mon-Fri): the outcome for TODAY's service day.
+#     11:15 PST = 19:15 UTC; the run is at 19:20 UTC to let the table update
+#     (in the data so far it was last updated 11:00-11:03 AM).
+#
+# The script picks the mode from the current Pacific time (before noon =
+# callback, otherwise evening), so one workflow with two schedules covers
+# both. workflow_dispatch takes an explicit mode for manual runs / testing.
+#
+# Times are in UTC because GitHub Actions cron is UTC. Pacific time here is
+# PST (UTC-8). Monitoring ends Dec 17, 2026, still PST; if it ever ran past
+# the March DST change, these crons would need to shift one hour earlier
+# in UTC (PDT is UTC-7).
+#
+# If the court table cannot be fetched or parsed, the script exits non-zero
+# and writes nothing -- a failed run is visible here, and no group status
+# is ever guessed. See scripts/fetch_jury.py for the full failure policy.
+name: Fetch jury reporting status
+
+on:
+  schedule:
+    # Evening check: Sun-Thu 6:00 PM PT -> Mon-Fri 02:05 UTC
+    - cron: "5 2 * * 1-5"
+    # Call-back check: Mon-Fri 11:15 AM PT -> 19:20 UTC
+    - cron: "20 19 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Which check to run"
+        type: choice
+        options: [auto, evening, callback]
+        default: auto
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-jury
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run parser tests
+        run: python3 -m unittest scripts.test_fetch_jury -v
+
+      - name: Fetch reporting table and update data.json
+        run: python3 scripts/fetch_jury.py --mode ${{ inputs.mode || 'auto' }}
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          if git diff --cached --quiet; then
+            echo "No change to data.json; nothing to commit."
+          else
+            git commit -m "Jury data update: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
