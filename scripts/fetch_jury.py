@@ -211,6 +211,34 @@ def parse_table(body):
     }
 
 
+def validate_mode_date(mode, service_date_str, today):
+    """Guard against applying a table that is not for this check's date.
+
+    The court overwrites one table in place, so a run must only ever
+    touch the entry the table is actually for:
+      evening  -- the table must be for a FUTURE service date (tomorrow,
+                  or Monday after a Friday). If it still shows today
+                  (e.g. the next day's posting is not up yet, or the next
+                  day is a court holiday with no posting), writing it as
+                  an evening posting would overwrite today's entry with
+                  the post-call-back table. Refuse instead.
+      callback -- the table must be for TODAY. Anything else is stale.
+    Raises RuntimeError on mismatch; the caller writes nothing.
+    """
+    service_date = datetime.strptime(service_date_str, "%Y-%m-%d").date()
+    if mode == "evening" and service_date <= today:
+        raise RuntimeError(
+            f"evening check: table is for {service_date_str}, which is not "
+            f"a future service date (today is {today}); the next posting "
+            "is not up yet or the next day has no service -- not writing"
+        )
+    if mode == "callback" and service_date != today:
+        raise RuntimeError(
+            f"callback check: table is for {service_date_str}, not today "
+            f"({today}) -- not writing"
+        )
+
+
 def load_data(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
@@ -313,6 +341,13 @@ def main(argv=None):
         f"table last updated {parsed['table_last_updated']}"
     )
     print(f"groups: {parsed['groups']}")
+
+    try:
+        validate_mode_date(mode, parsed["service_date"], now.date())
+    except Exception as exc:  # noqa: BLE001 - failure policy: write nothing
+        print(f"ERROR: {exc}", file=sys.stderr)
+        print("No data written; group status was not guessed.", file=sys.stderr)
+        return 1
 
     data_path = Path(args.data)
     data = load_data(data_path)

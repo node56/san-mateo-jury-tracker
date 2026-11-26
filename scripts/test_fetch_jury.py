@@ -7,10 +7,11 @@ scripts.test_fetch_jury -v  (from the repo root, or python3 scripts/test_fetch_j
 
 import sys
 import unittest
+from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fetch_jury import parse_table  # noqa: E402
+from fetch_jury import parse_table, validate_mode_date  # noqa: E402
 
 
 def make_html(service, updated, rows):
@@ -73,6 +74,24 @@ class TestParse(unittest.TestCase):
         )
         with self.assertRaises(RuntimeError):
             parse_table(bad)
+
+
+class TestModeDateGuard(unittest.TestCase):
+    # Evening must only touch a future service date; a table still
+    # showing today (post-call-back, or next posting not up) must not
+    # overwrite today's entry as if it were the evening posting.
+    def test_evening_rejects_today(self):
+        with self.assertRaises(RuntimeError):
+            validate_mode_date("evening", "2026-11-25", date(2026, 11, 25))
+
+    def test_evening_accepts_tomorrow_and_monday_after_friday(self):
+        validate_mode_date("evening", "2026-11-26", date(2026, 11, 25))
+        validate_mode_date("evening", "2026-11-30", date(2026, 11, 27))
+
+    def test_callback_requires_today(self):
+        validate_mode_date("callback", "2026-11-25", date(2026, 11, 25))
+        with self.assertRaises(RuntimeError):
+            validate_mode_date("callback", "2026-11-26", date(2026, 11, 25))
 
 
 if __name__ == "__main__":
