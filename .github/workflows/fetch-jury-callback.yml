@@ -1,0 +1,56 @@
+# Call-back check: fetch the San Mateo jury reporting table and record
+# the 11:15 AM call-back outcome for today's service date in
+# docs/data.json, updating the same entry the evening run created.
+#
+# Schedule: 11:15 AM PT Mon-Fri, run at 11:20 AM to let the table update
+# = 19:20 UTC. Times are in UTC because GitHub Actions cron is UTC;
+# Pacific time here is PST (UTC-8). Monitoring ends Dec 17, 2026, still
+# PST; if it ever ran past the March DST change, this cron would need to
+# shift one hour earlier in UTC (PDT is UTC-7).
+#
+# The mode is explicit here (--mode callback), never inferred from the
+# clock: GitHub has started scheduled runs up to ~9 hours late, and a
+# late call-back run must not turn into an evening run. See the date
+# guard in scripts/fetch_jury.py: a call-back run only writes a table
+# for TODAY, and a guard refusal exits 0 (a protected no-write), not 1.
+name: Fetch jury reporting status (call-back)
+
+on:
+  schedule:
+    - cron: "20 19 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-jury
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run parser tests
+        run: python3 -m unittest scripts.test_fetch_jury -v
+
+      - name: Fetch reporting table and update data.json
+        run: python3 scripts/fetch_jury.py --mode callback
+
+      - name: Commit and push if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          if git diff --cached --quiet; then
+            echo "No change to data.json; nothing to commit."
+          else
+            git commit -m "Jury data update: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
