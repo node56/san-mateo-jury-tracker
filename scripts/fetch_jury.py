@@ -27,6 +27,9 @@ Failure policy (deliberate): if the table cannot be fetched or parsed
 after retries, the script exits non-zero and writes NOTHING. A failed
 run is visible in the Actions log; no group status is ever guessed, and
 a previous verified result is never overwritten with an unverified one.
+If the table is fetched fine but is for the wrong date for this check
+(the date guard), that is a protected no-write and exits 0 -- the run
+did its job by refusing.
 
 Stdlib only, so it runs on a stock GitHub Actions ubuntu runner with
 no dependencies to install.
@@ -344,10 +347,14 @@ def main(argv=None):
 
     try:
         validate_mode_date(mode, parsed["service_date"], now.date())
-    except Exception as exc:  # noqa: BLE001 - failure policy: write nothing
-        print(f"ERROR: {exc}", file=sys.stderr)
-        print("No data written; group status was not guessed.", file=sys.stderr)
-        return 1
+    except Exception as exc:  # noqa: BLE001 - a protected no-write is
+        # the correct outcome, not a failure: the table is for the wrong
+        # date for this check (e.g. a late run, or a holiday with no new
+        # posting). Exit 0 so the Action run shows green; the reason is
+        # still in the run log, and the separate 6 PM agent check still
+        # reports a table that has not been updated.
+        print(f"No write: {exc}")
+        return 0
 
     data_path = Path(args.data)
     data = load_data(data_path)

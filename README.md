@@ -30,15 +30,24 @@ used a live browser. When a check could not be verified (Mon Nov 23, 11:15 AM:
 the iframe host timed out 11:14–11:43 AM), that is recorded as *not verified*,
 not guessed.
 
-Since Nov 25, 2026 both checks are automated by a GitHub Action
-(`.github/workflows/fetch-jury.yml`, script in `scripts/fetch_jury.py`,
-parser tests in `scripts/test_fetch_jury.py`):
+Since Nov 25, 2026 both checks are automated by two GitHub Actions
+(`.github/workflows/fetch-jury-evening.yml` and
+`.github/workflows/fetch-jury-callback.yml`, script in
+`scripts/fetch_jury.py`, parser tests in `scripts/test_fetch_jury.py`):
 
 - **Evening, 6:00 PM PT Sun–Thu** (02:05 UTC Mon–Fri): fetches the iframe
   page directly and records the evening posting for the next service date.
 - **Call-back, 11:20 AM PT Mon–Fri** (19:20 UTC): fetches the same table
   and records the call-back outcome for that day's service date, updating
   the same entry the evening run created.
+
+Each workflow passes its mode explicitly (`--mode evening` /
+`--mode callback`); the mode is never inferred from the clock, because
+GitHub has started scheduled runs up to ~9 hours late and a late run
+must not change checks. A date guard in the script also protects each
+run: evening writes only a table for a future service date, call-back
+only for today, and a guard refusal exits 0 (a protected no-write),
+not 1.
 
 If the table cannot be fetched or parsed, the Action fails and writes
 nothing — no group status is ever guessed. Note: from one VM the court

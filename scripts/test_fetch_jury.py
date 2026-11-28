@@ -7,10 +7,12 @@ scripts.test_fetch_jury -v  (from the repo root, or python3 scripts/test_fetch_j
 
 import sys
 import unittest
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fetch_jury  # noqa: E402
 from fetch_jury import parse_table, validate_mode_date  # noqa: E402
 
 
@@ -92,6 +94,32 @@ class TestModeDateGuard(unittest.TestCase):
         validate_mode_date("callback", "2026-11-25", date(2026, 11, 25))
         with self.assertRaises(RuntimeError):
             validate_mode_date("callback", "2026-11-26", date(2026, 11, 25))
+
+
+class TestGuardExitCode(unittest.TestCase):
+    # A guard refusal is a protected no-write: main() must return 0
+    # and must not touch data.json, even though the fetch succeeded.
+    def test_guard_refusal_exits_zero_without_writing(self):
+        import json
+        import tempfile
+
+        data = {
+            "last_updated": "2026-11-25T12:35:00-08:00",
+            "service_days": [],
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "data.json"
+            path.write_text(json.dumps(data))
+            with mock.patch.object(
+                fetch_jury, "fetch_table", return_value=ALL_EXCUSED
+            ), mock.patch.object(
+                fetch_jury, "pt_now", return_value=datetime(2026, 11, 27, 11, 20)
+            ):
+                rc = fetch_jury.main(
+                    ["--mode", "callback", "--data", str(path)]
+                )
+            self.assertEqual(rc, 0)
+            self.assertEqual(json.loads(path.read_text()), data)
 
 
 if __name__ == "__main__":
