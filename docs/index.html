@@ -28,6 +28,7 @@
   .grid td.date { text-align: left; padding-left: 8px; white-space: nowrap; font-weight: 600; }
   .called830 { background: #1a7f37; color: #fff; font-weight: 700; }
   .called930 { background: #4ac26b; color: #083; font-weight: 700; }
+  .called { background: #1a7f37; color: #fff; font-weight: 700; }
   .callback { background: #fde68a; }
   .excused { background: #cbd5e1; }
   .unverified { background: repeating-linear-gradient(45deg, #fde68a, #fde68a 6px, #fff 6px, #fff 12px); }
@@ -125,6 +126,10 @@ fetch('data.json').then(r => r.json()).then(d => {
     const cells = groups.map(n => {
       if (ev.called_0830.includes(n)) return '<td class="called830" title="Called 8:30 AM">8:30</td>';
       if (ev.called_0930.includes(n)) return '<td class="called930" title="Called 9:30 AM">9:30</td>';
+      const other = (ev.called_other || {});
+      for (const [t, gs] of Object.entries(other)) {
+        if (gs.includes(n)) return '<td class="called" title="Called ' + t + '">' + t.replace(' AM','').replace(' PM','') + '</td>';
+      }
       if (ev.excused.includes(n)) return '<td class="excused" title="Excused">—</td>';
       return '<td class="callback" title="Call-back 11:15 AM">CB</td>';
     }).join('');
@@ -143,7 +148,8 @@ fetch('data.json').then(r => r.json()).then(d => {
   document.getElementById('detail-table').querySelector('tbody').innerHTML = d.service_days.map(day => {
     const ev = day.evening;
     const called = (ev.called_0830.length ? '8:30 AM: ' + range(ev.called_0830) : '') +
-      (ev.called_0930.length ? (ev.called_0830.length ? '<br>' : '') + '9:30 AM: ' + range(ev.called_0930) : '') || 'None';
+      (ev.called_0930.length ? (ev.called_0830.length ? '<br>' : '') + '9:30 AM: ' + range(ev.called_0930) : '') +
+      Object.entries(ev.called_other || {}).map(([t, gs]) => '<br>' + t + ': ' + range(gs)).join('') || 'None';
     return '<tr><td>' + day.weekday + ' ' + day.service_date + '</td><td>' + fmt(day.evening_check) + '</td><td>' + fmt(day.table_last_updated) + '</td><td>' + called + '</td><td>' + range(ev.callback) + '</td><td>' + (ev.excused.length ? range(ev.excused) : 'None') + '</td></tr>';
   }).join('');
   const loc = d.service_days.find(x => x.evening.location);
